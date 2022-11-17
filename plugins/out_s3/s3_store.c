@@ -125,7 +125,8 @@ struct s3_file *s3_store_file_get(struct flb_s3 *ctx, const char *tag,
 /* Append data to a new or existing fstore file */
 int s3_store_buffer_put(struct flb_s3 *ctx, struct s3_file *s3_file,
                         const char *tag, int tag_len,
-                        char *data, size_t bytes)
+                        char *data, size_t bytes,
+                        struct flb_time *tms)
 {
     int ret;
     flb_sds_t name;
@@ -168,7 +169,13 @@ int s3_store_buffer_put(struct flb_s3 *ctx, struct s3_file *s3_file,
             return -1;
         }
         s3_file->fsf = fsf;
-        s3_file->create_time = time(NULL);
+        if (tms == NULL) {
+            s3_file->create_time = time(NULL);
+            flb_plg_error(ctx->ins, "Failed to get timestamp used for the S3 key, "
+                          "use the current time instead.");
+        } else {
+            s3_file->create_time = tms->tm.tv_sec;
+        }
 
         /* Use fstore opaque 'data' reference to keep our context */
         fsf->data = s3_file;

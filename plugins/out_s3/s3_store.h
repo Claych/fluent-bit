@@ -34,7 +34,8 @@ struct s3_file {
 
 int s3_store_buffer_put(struct flb_s3 *ctx, struct s3_file *s3_file,
                         const char *tag, int tag_len,
-                        char *data, size_t bytes);
+                        char *data, size_t bytes,
+                        struct flb_time *tms);
 
 int s3_store_init(struct flb_s3 *ctx);
 int s3_store_exit(struct flb_s3 *ctx);
